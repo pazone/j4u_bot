@@ -4,9 +4,9 @@ const telegram = require('./telegram')
 const cron = require('node-cron');
 
 publishJobs = async () => {    
-    console.info("Publishing new tasks")
+    console.info("Publishing new jobs")
     
-    jobs = await notion.fetchNewJobs()
+    jobs = await notion.fetchNewJobs()    
     telegram.publishToChannel(jobs)    
     notion.markAsPublished(jobs)
 

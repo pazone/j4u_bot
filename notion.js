@@ -10,16 +10,14 @@ const names = {
     city: 'City/ Місто / Город',
     country: 'Country / Країна / Страна',
     site: 'Website/ Веб-сайт',
-    position: 'Position title/ Назва посади / Название должности'
+    position: 'Position title/ Назва посади / Название должности',
+    company: 'Company/ Компанія / Компания'
 }
 
-const simplify = (row) => {
-    var jobUrl = new URL(row.url)
-    jobUrl.hostname = 'uaworks.org'
-    
+const simplify = (row) => { 
     return {
         id: row.id,
-        notionUrl: jobUrl.href,
+        notionUrl: 'https://uaworks.org/' + row.id.replace(/[^\w\s]/gi, ''),
         link: row.properties[names.link]?.url,
         email: row.properties[names.email]?.email,
         city: row.properties[names.city]?.rich_text[0]?.text?.content,
@@ -32,14 +30,13 @@ const simplify = (row) => {
 
 module.exports.fetchNewJobs = async () => {
     const newJobsPage = await notion.databases.query({        
-        database_id: process.env.TEST_DATABASE_ID, 
+        database_id: process.env.DATABASE_ID, 
         filter: {
             and: [
                 {                    
                     property: "Reviewed",
-                    checkbox: {
-                        // todo: change to true
-                        equals: false,
+                    checkbox: {                        
+                        equals: true,
                     },
                 },
                 {
@@ -53,6 +50,7 @@ module.exports.fetchNewJobs = async () => {
         },
     })
 
+    console.info(`Notion: ${newJobsPage.results.length} new jobs fetched`);
     return newJobsPage.results.map(simplify)
 }
 
